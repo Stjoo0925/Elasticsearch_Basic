@@ -1,0 +1,31 @@
+### 단건 조회
+GET http://localhost:9200/movies/_doc/1
+
+### match 검색
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "genre": "Sci-Fi"
+    }
+  }
+}
+
+### bool + range 검색
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "genre": "Action" } }
+      ],
+      "filter": [
+        { "range": { "rating": { "gte": 8.5 } } }
+      ]
+    }
+  }
+}
