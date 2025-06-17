@@ -1,0 +1,49 @@
+# 학습용 단일 노드 Elasticsearch + Kibana 환경
+# 모든 설정은 로컬 개발 편의성을 위해 최소화되었습니다.
+version: "3.8"
+services:
+  # ────────────────────────────────
+  # Elasticsearch 서비스 정의
+  # ────────────────────────────────
+  elasticsearch:
+    # 공식 8.12.1 이미지 사용
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    # 컨테이너 이름 지정 → docker ps 시 식별 용이
+    container_name: es01
+    environment:
+      # 단일 노드 클러스터 모드 (마스터/데이터 동일 노드)
+      - discovery.type=single-node
+      # 보안 비활성화(학습 목적)
+      - xpack.security.enabled=false
+      # JVM 힙 메모리 1GB 고정 (호스트 메모리 절약)
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      # 색인 데이터 영속화 볼륨
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      # 호스트 9200 → 컨테이너 9200 매핑 (REST API)
+      - "9200:9200"
+  # ────────────────────────────────
+  # Kibana 서비스 정의
+  # ────────────────────────────────
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.1
+    container_name: kibana01
+    environment:
+      # Kibana가 접속할 ES 주소 (컨테이너 네트워크 이름 사용)
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # localhost 접속 시 URL 포트 정보를 Kibana 내부에서 인지
+      - SERVER_PUBLICBASEURL=http://localhost:5601
+      # Interactive Setup 비활성화(보안 최소화)
+      - KIBANA_AUTOCONFIG_XPACK_SECURITY=false
+    depends_on:
+      # ES 기동 완료 후 Kibana 시작
+      - elasticsearch
+    ports:
+      # 호스트 5601 → Kibana UI
+      - "5601:5601"
+# ────────────────────────────────
+# 볼륨 정의: 컨테이너 재기동 시 데이터 보존
+# ────────────────────────────────
+volumes:
+  esdata:
