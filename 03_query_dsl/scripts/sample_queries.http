@@ -1,0 +1,75 @@
+### 1) match vs term
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "title": "inception"
+    }
+  }
+}
+### term (대소문자 정확 일치)
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "title.keyword": {
+        "value": "Inception"
+      }
+    }
+  }
+}
+
+### 2) bool + must/filter
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "genre": "Sci-Fi" } }
+      ],
+      "filter": [
+        { "range": { "year": { "gte": 2010 } } }
+      ]
+    }
+  }
+}
+
+### 3) analyzer 비교
+POST http://localhost:9200/_analyze
+Content-Type: application/json
+
+{
+  "analyzer": "standard",
+  "text": "Elasticsearch Basic Study"
+}
+### nori analyzer(한국어)
+POST http://localhost:9200/_analyze
+Content-Type: application/json
+
+{
+  "analyzer": "nori",
+  "text": "엘라스틱서치를 학습합니다"
+}
+
+### 4) highlight 예시
+POST http://localhost:9200/movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "title": "star"
+    }
+  },
+  "highlight": {
+    "fields": {
+      "title": {}
+    }
+  }
+}

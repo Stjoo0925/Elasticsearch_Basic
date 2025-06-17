@@ -44,4 +44,209 @@ chmod +x setup.sh
 
 # 데이터 적재 실행
 ./setup.sh
+
+# kibana dev tool 실행
+http://localhost:5601/app/dev_tools#/console
+```
+
+## 실행내용
+
+```
+GET movies/_doc/1
+
+{
+  "_index": "movies",
+  "_id": "1",
+  "_version": 1,
+  "_seq_no": 0,
+  "_primary_term": 1,
+  "found": true,
+  "_source": {
+    "title": "Inception",
+    "year": 2010,
+    "genre": "Sci-Fi",
+    "rating": 8.8
+  }
+}
+```
+
+```
+POST movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "genre": "Sci-Fi"
+    }
+  }
+}
+
+{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 5,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "movies",
+        "_id": "1",
+        "_score": 1,
+        "_source": {
+          "title": "Inception",
+          "year": 2010,
+          "genre": "Sci-Fi",
+          "rating": 8.8
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "2",
+        "_score": 1,
+        "_source": {
+          "title": "Interstellar",
+          "year": 2014,
+          "genre": "Sci-Fi",
+          "rating": 8.6
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "3",
+        "_score": 1,
+        "_source": {
+          "title": "The Dark Knight",
+          "year": 2008,
+          "genre": "Action",
+          "rating": 9
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "4",
+        "_score": 1,
+        "_source": {
+          "title": "Parasite",
+          "year": 2019,
+          "genre": "Thriller",
+          "rating": 8.5
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "5",
+        "_score": 1,
+        "_source": {
+          "title": "La La Land",
+          "year": 2016,
+          "genre": "Musical",
+          "rating": 8
+        }
+      }
+    ]
+  }
+}
+```
+
+```
+POST movies/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "genre": "Action" } }
+      ],
+      "filter": [
+        { "range": { "rating": { "gte": 8.5 } } }
+      ]
+    }
+  }
+}
+
+{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 5,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "movies",
+        "_id": "1",
+        "_score": 1,
+        "_source": {
+          "title": "Inception",
+          "year": 2010,
+          "genre": "Sci-Fi",
+          "rating": 8.8
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "2",
+        "_score": 1,
+        "_source": {
+          "title": "Interstellar",
+          "year": 2014,
+          "genre": "Sci-Fi",
+          "rating": 8.6
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "3",
+        "_score": 1,
+        "_source": {
+          "title": "The Dark Knight",
+          "year": 2008,
+          "genre": "Action",
+          "rating": 9
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "4",
+        "_score": 1,
+        "_source": {
+          "title": "Parasite",
+          "year": 2019,
+          "genre": "Thriller",
+          "rating": 8.5
+        }
+      },
+      {
+        "_index": "movies",
+        "_id": "5",
+        "_score": 1,
+        "_source": {
+          "title": "La La Land",
+          "year": 2016,
+          "genre": "Musical",
+          "rating": 8
+        }
+      }
+    ]
+  }
+}
 ```
