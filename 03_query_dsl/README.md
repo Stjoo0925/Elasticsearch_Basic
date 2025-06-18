@@ -63,78 +63,58 @@ Content-Type: application/json
   }
 }
 
-{
-  "took": 1,
-  "timed_out": false,
-  "_shards": {
-    "total": 1,
-    "successful": 1,
-    "skipped": 0,
-    "failed": 0
+"hits": {
+  "total": {
+    "value": 1,
+    "relation": "eq"
   },
-  "hits": {
-    "total": {
-      "value": 5,
-      "relation": "eq"
-    },
-    "max_score": 1,
-    "hits": [
-      {
-        "_index": "movies",
-        "_id": "1",
-        "_score": 1,
-        "_source": {
-          "title": "Inception",
-          "year": 2010,
-          "genre": "Sci-Fi",
-          "rating": 8.8
-        }
-      },
-      {
-        "_index": "movies",
-        "_id": "2",
-        "_score": 1,
-        "_source": {
-          "title": "Interstellar",
-          "year": 2014,
-          "genre": "Sci-Fi",
-          "rating": 8.6
-        }
-      },
-      {
-        "_index": "movies",
-        "_id": "3",
-        "_score": 1,
-        "_source": {
-          "title": "The Dark Knight",
-          "year": 2008,
-          "genre": "Action",
-          "rating": 9
-        }
-      },
-      {
-        "_index": "movies",
-        "_id": "4",
-        "_score": 1,
-        "_source": {
-          "title": "Parasite",
-          "year": 2019,
-          "genre": "Thriller",
-          "rating": 8.5
-        }
-      },
-      {
-        "_index": "movies",
-        "_id": "5",
-        "_score": 1,
-        "_source": {
-          "title": "La La Land",
-          "year": 2016,
-          "genre": "Musical",
-          "rating": 8
-        }
+  "max_score": 1.6943598,
+  "hits": [
+    {
+      "_index": "movies",
+      "_id": "1",
+      "_score": 1.6943598,
+      "_source": {
+        "title": "Inception",
+        "year": 2010,
+        "genre": "Sci-Fi",
+        "rating": 8.8
       }
-    ]
-  }
+    }
+  ]
+}
+
+POST http://localhost:9200/_analyze
+Content-Type: application/json
+
+{
+  "analyzer": "standard",
+  "text": "Elasticsearch Basic Study"
+}
+
+{
+  "tokens": [
+    {
+      "token": "elasticsearch",
+      "start_offset": 0,
+      "end_offset": 13,
+      "type": "<ALPHANUM>",
+      "position": 0
+    },
+    {
+      "token": "basic",
+      "start_offset": 14,
+      "end_offset": 19,
+      "type": "<ALPHANUM>",
+      "position": 1
+    },
+    {
+      "token": "study",
+      "start_offset": 20,
+      "end_offset": 25,
+      "type": "<ALPHANUM>",
+      "position": 2
+    }
+  ]
 }
 ```
