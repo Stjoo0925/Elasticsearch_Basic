@@ -1,6 +1,5 @@
 # 학습용 단일 노드 Elasticsearch + Kibana 환경
 # 모든 설정은 로컬 개발 편의성을 위해 최소화되었습니다.
-version: "3.8"
 services:
   # ────────────────────────────────
   # Elasticsearch 서비스 정의
