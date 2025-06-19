@@ -1,0 +1,62 @@
+### 1) 동적 템플릿이 포함된 인덱스 생성
+PUT /movies_with_templates
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "strings_as_keywords": {           // 문자열은 기본적으로 keyword
+          "match_mapping_type": "string",
+          "mapping": { "type": "keyword" }
+        }
+      },
+      {
+        "integers_as_short": {             // 정수는 short 타입
+          "match_mapping_type": "long",
+          "mapping": { "type": "short" }
+        }
+      }
+    ]
+  }
+}
+
+### 2) 샘플 문서 색인 (동적 매핑 확인용)
+POST /movies_with_templates/_doc/1
+{
+  "title": "Matrix",
+  "year": 1999,
+  "director": "Wachowski Sisters",
+  "budget": 63000000
+}
+
+### 3) 동적으로 생성된 매핑 확인
+GET /movies_with_templates/_mapping
+
+{
+  "movies_with_templates": {
+    "mappings": {
+      "dynamic_templates": [
+        {
+          "strings_as_keywords": {
+            "match_mapping_type": "string",
+            "mapping": {
+              "type": "keyword"
+            }
+          }
+        },
+        {
+          "integers_as_short": {
+            "match_mapping_type": "long",
+            "mapping": {
+              "type": "short"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```

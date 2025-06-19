@@ -1,0 +1,42 @@
+### 1) 현재 movies 인덱스 매핑 확인
+GET /movies/_mapping
+
+### 2) rating 필드를 scaled_float로 최적화한 새 인덱스 생성
+PUT /movies_optimized
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",                    // 전문 검색용
+        "fields": {
+          "keyword": {                     // 정렬/집계용 서브필드
+            "type": "keyword"
+          }
+        }
+      },
+      "year": { "type": "short" },         // 연도는 short(2바이트)로 충분
+      "genre": { "type": "keyword" },      // 카테고리는 keyword
+      "rating": {
+        "type": "scaled_float",            // 메모리 효율적인 실수형
+        "scaling_factor": 10               // 소수점 1자리까지 저장 (8.8 → 88)
+      }
+    }
+  }
+}
+
+### 3) _reindex API로 기존 데이터 복사
+POST /_reindex
+{
+  "source": { "index": "movies" },        // 원본 인덱스
+  "dest": { "index": "movies_optimized" } // 대상 인덱스
+}
+
+### 4) 새 인덱스에서 집계 테스트
+POST /movies_optimized/_search
+{
+  "size": 0,
+  "aggs": {
+    "avg_rating": { "avg": { "field": "rating" } },
+    "genre_terms": { "terms": { "field": "genre" } }
+  }
+}
