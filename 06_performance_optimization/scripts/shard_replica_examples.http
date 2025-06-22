@@ -1,0 +1,44 @@
+### 1) 현재 인덱스 설정 확인
+GET /movies/_settings
+
+### 2) 샤드/복제본 설정 변경 (성능 테스트용)
+PUT /movies/_settings
+{
+  "index": {
+    "number_of_replicas": 0           # 복제본 제거로 색인 성능 향상
+  }
+}
+
+### 3) 멀티 샤드 인덱스 생성 (대용량 데이터 대비)
+PUT /movies_multi_shard
+{
+  "settings": {
+    "number_of_shards": 3,            # 3개 샤드로 분산
+    "number_of_replicas": 0,          # 복제본 없음 (단일 노드)
+    "refresh_interval": "30s"         # 새로고침 간격 조정 (기본 1s)
+  },
+  "mappings": {
+    "properties": {
+      "title": { "type": "text" },
+      "year": { "type": "short" },
+      "genre": { "type": "keyword" },
+      "rating": { "type": "scaled_float", "scaling_factor": 10 }
+    }
+  }
+}
+
+### 4) 기존 데이터 복사
+POST /_reindex
+{
+  "source": { "index": "movies" },
+  "dest": { "index": "movies_multi_shard" }
+}
+
+### 5) 샤드별 분산 상태 확인
+GET /_cat/shards/movies_multi_shard?v
+
+### 6) 강제 새로고침 (실시간 검색 필요 시)
+POST /movies/_refresh
+
+### 7) 세그먼트 병합 최적화
+POST /movies/_forcemerge?max_num_segments=1

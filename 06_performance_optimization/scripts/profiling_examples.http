@@ -1,0 +1,45 @@
+### 1) 쿼리 성능 프로파일링
+POST /movies/_search
+{
+  "profile": true,                    # 프로파일링 활성화
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title": "dark" } }
+      ],
+      "filter": [
+        { "range": { "rating": { "gte": 8.0 } } }
+      ]
+    }
+  }
+}
+
+### 2) 집계 성능 프로파일링
+POST /movies/_search
+{
+  "profile": true,
+  "size": 0,
+  "aggs": {
+    "genre_stats": {
+      "terms": { "field": "genre.keyword" },
+      "aggs": {
+        "avg_rating": { "avg": { "field": "rating" } }
+      }
+    }
+  }
+}
+
+### 3) 검색 속도 비교 (캐시 비활성화)
+POST /movies/_search?request_cache=false
+{
+  "query": { "match_all": {} }
+}
+
+### 4) 느린 쿼리 로그 설정 확인
+GET /_cluster/settings?include_defaults=true&filter_path=*.search.slowlog
+
+### 5) 인덱스별 통계 확인
+GET /movies/_stats?human
+
+### 6) 노드별 성능 지표
+GET /_nodes/stats?human
